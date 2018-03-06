@@ -1,8 +1,6 @@
 package lt.swedbank.interestcalculator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class CompoundInterestCalculator {
@@ -14,6 +12,8 @@ public class CompoundInterestCalculator {
         double[] interestRate = readInterestRate();
         int periodLength = readPeriodLength();
         String frequency = readCompoundFrequency();
+//      double[] yearlyInterests = calculateYearlyInterests(periodLength, amount, periodsPerYear, interestRate);
+//      printYearlyInterests(yearlyInterests);
 
         double[][] intermediateInterestMatrix = new double[interestRate.length][];
         int periodsPerYear = returnPeriodsPerYear(frequency);
@@ -23,10 +23,8 @@ public class CompoundInterestCalculator {
         }
         printIntermediateInterestMatrix(intermediateInterestMatrix);
 
-//        double[] yearlyInterests = calculateYearlyInterests(periodLength, amount, periodsPerYear, interestRate);
-//        printYearlyInterests(yearlyInterests);
-//        printIntermediateInterests(intermediateInterests);
 //        System.out.printf("Total amount: %.2f", (amount + yearlyInterests[yearlyInterests.length - 1]));
+//        printIntermediateInterests(intermediateInterests);
     }
 
     private static void printIntermediateInterestMatrix(double[][] intermediateInterestMatrix) {
@@ -38,50 +36,81 @@ public class CompoundInterestCalculator {
         }
     }
 
-
     private static double readAmount() {
-        do{
-            try{
+        do {
+            try {
                 System.out.print("Amount: ");
                 double amount = scan.nextDouble();
-                if (amount <= 0){
+                if (amount <= 0) {
                     throw new Exception();
                 }
-            }  catch (Exception e){
-                System.out.println("Invalid input! Try again!");
+                return amount;
+            } catch (Exception e) {
+                printInputError();
+                scan.nextLine();
             }
-        }while (true);
+        } while (true);
 
     }
 
     private static double[] readInterestRate() {
-        List<Double> interestRates = new ArrayList<>();
+        double[] interestRates = new double[0];
+        double tempInterestRate;
         do {
-            System.out.print("Interest rate (%): ");
-            double tempInterestRate = scan.nextDouble() / 100;
+            while (true) {
+                try {
+                    System.out.print("Interest rate (%): ");
+                    tempInterestRate = scan.nextDouble();
+                    if (tempInterestRate > 100 || tempInterestRate < 0) {
+                        throw new Exception();
+                    }
+                    break;
+                } catch (Exception e) {
+                    printInputError();
+                    scan.nextLine();
+                }
+            }
             if (tempInterestRate == 0) {
                 break;
             }
-            interestRates.add(tempInterestRate);
+            interestRates = Arrays.copyOf(interestRates, interestRates.length + 1);
+            interestRates[interestRates.length - 1] = tempInterestRate / 100;
 
         } while (true);
-        double[] interestRate = new double[interestRates.size()];
-        for (int i = 0; i < interestRate.length; i++) {
-            interestRate[i] = interestRates.get(i);
-        }
-        return interestRate;
+        return interestRates;
     }
 
     private static int readPeriodLength() {
-        System.out.print("Period length (years): ");
-        return scan.nextInt();
+        while (true) {
+            try {
+                System.out.print("Period length (years): ");
+                int periodLength = scan.nextInt();
+                if (periodLength < 1) {
+                    throw new Exception();
+                }
+                return periodLength;
+            } catch (Exception e) {
+                printInputError();
+                scan.nextLine();
+            }
+        }
     }
 
     private static String readCompoundFrequency() {
-        System.out.print("Compound frequency: ");
-        return scan.next();
+        String testInput = "DWMQHY";
+        while (true) {
+            try {
+                System.out.print("Compound frequency: ");
+                String frequency = scan.next();
+                if (!testInput.contains(frequency)) {
+                    throw new Exception();
+                }
+                return frequency;
+            } catch (Exception e) {
+                printInputError();
+            }
+        }
     }
-
 
     private static double[] calculateIntermediateInterests(int periodLength, int periodsPerYear, double amount, double interestRate) {
         int totalPeriods = periodLength * periodsPerYear;
@@ -93,7 +122,6 @@ public class CompoundInterestCalculator {
         }
         return intermediateInterests;
     }
-
 
     private static int returnPeriodsPerYear(String frequency) {
         switch (frequency) {
@@ -110,6 +138,10 @@ public class CompoundInterestCalculator {
             default:
                 return 1;
         }
+    }
+
+    private static void printInputError() {
+        System.out.println("Invalid input! Try again!");
     }
 
     private static double[] calculateYearlyInterests(int periodLength, double amount, int periodsPerYear, double interestRate) {
