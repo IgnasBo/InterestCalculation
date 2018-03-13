@@ -4,10 +4,12 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class CompoundInterestCalculator {
+    //Scan could be final, since you're initializing it right away
     private static Scanner scan = new Scanner(System.in);
 
     public static void main(String[] args) {
 
+        //Very good. You are not declaring local variable at a start of them "main" method (this is a good thing :) ).
         double amount = readAmount();
         double[] interestRate = readInterestRate();
         int periodLength = readPeriodLength();
@@ -106,6 +108,7 @@ public class CompoundInterestCalculator {
             if (tempInterestRate == 0) {
                 break;
             }
+            //Good. So far nobody used "Arrays.copyOf(...)". You are saving 1 additional variable declaration this way :)
             interestRates = Arrays.copyOf(interestRates, interestRates.length + 1);
             interestRates[interestRates.length - 1] = tempInterestRate / 100;
 
@@ -147,6 +150,8 @@ public class CompoundInterestCalculator {
     }
 
     private static boolean isAmountValid(double amount) {
+        //You can simplify it:
+        //return !(amount <= 0);
         if (amount <= 0) {
             return false;
         }
@@ -154,6 +159,8 @@ public class CompoundInterestCalculator {
     }
 
     private static boolean isInterestRateValid(double interestRate) {
+        //You can simplify it:
+        //return !(interestRate > 100) && !(interestRate < 0);
         if (interestRate > 100 || interestRate < 0) {
             return false;
         }
@@ -161,6 +168,8 @@ public class CompoundInterestCalculator {
     }
 
     private static boolean isPeriodLengthValid(int periodLength) {
+        //You can simplify it:
+        //return periodLength >= 1;
         if (periodLength < 1) {
             return false;
         }
@@ -168,7 +177,11 @@ public class CompoundInterestCalculator {
     }
 
     private static boolean isCompoundFrequencyValid(String frequency) {
+        //Make this a constant
         String testInput = "DWMQHY";
+        //You can simplify it:
+        //return testInput.contains(frequency);
+        //This check won't work correctly if "frequency" length > 1 and "frequency" String is a subset of "testInput" (ex. "DW", "MQH")
         if (!testInput.contains(frequency)) {
             return false;
         }
@@ -189,6 +202,8 @@ public class CompoundInterestCalculator {
 
     private static void printYearlyInterests(double[] yearlyInterests) {
         for (int i = 0; i < yearlyInterests.length; i++) {
+            //printf should take 2 arguments: 1 - format mask, 2 - vararg of values being formatted. So it should look like this instead:
+            //System.out.printf("Interest amount after year %d: %.2f\n", i + 1, yearlyInterests[i]);
             System.out.printf("Interest amount after year " + (i + 1) + ": %.2f\n", yearlyInterests[i]);
         }
     }
